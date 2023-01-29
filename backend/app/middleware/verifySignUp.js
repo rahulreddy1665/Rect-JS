@@ -1,0 +1,49 @@
+/**
+ * Application Name: Royal Volunteers Back End
+ * Application Version: 1.0
+ * Author: Zevcore Private Limited
+ * Last Modified Date: 04.07.2022
+ * Developer Name: Suhas S
+ */
+
+const db = require("../models");
+const ROLES = db.ROLES;
+const User = db.user;
+
+checkDuplicateUsernameOrEmail = (req, res, next) => {
+  // Username
+  User.findOne({
+    where: {
+      username: req.body.username,
+    },
+  }).then((user) => {
+    if (user) {
+      res.status(400).send({
+        message: "Failed! Username is already in use!",
+      });
+      return;
+    }
+
+    // Email
+    User.findOne({
+      where: {
+        email: req.body.email,
+      },
+    }).then((user) => {
+      if (user) {
+        res.status(400).send({
+          message: "Failed! Email is already in use!",
+        });
+        return;
+      }
+
+      next();
+    });
+  });
+};
+
+const verifySignUp = {
+  checkDuplicateUsernameOrEmail: checkDuplicateUsernameOrEmail,
+};
+
+module.exports = verifySignUp;
